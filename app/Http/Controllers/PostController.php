@@ -41,9 +41,9 @@ class PostController extends Controller
             ], 201);
         }
     }
-    public function index()
+    public function index($page = 0)
     {
-        $posts = Post::latest()->get();
+        $posts = Post::latest()->skip($page * 10)->take(10)->get();
         if($posts) {
             return response()->json([
                 'posts' => $posts
