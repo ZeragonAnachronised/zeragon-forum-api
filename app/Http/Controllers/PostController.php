@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class PostController extends Controller
 {
@@ -43,16 +44,21 @@ class PostController extends Controller
     }
     public function index($page = 0)
     {
+        $authors = [];
         $posts = Post::latest()->skip($page * 10)->take(10)->get();
+        foreach($posts as $key => $post) {
+            $authors[$key] = User::where('id', $post->user_id)->get()[0]->name;
+        }
         if($posts) {
             return response()->json([
-                'posts' => $posts
-            ]);
+                'posts' => $posts,
+                'authors' => $authors
+            ], 200);
         }
         else {
             return response()->json([
                 'message' => 'no posts'
-            ]);
+            ], 404);
         }
     }
 }
